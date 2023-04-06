@@ -444,7 +444,7 @@ class DialWidget(QWidget):
 
         x = text_radius * math.cos(math.radians(angle))
         y = text_radius * math.sin(math.radians(angle))
-        painter.drawText(int(x - w / 2) - 70, int(y - h / 2) + 100, int(w),
+        painter.drawText(int(x - w / 2) - 45, int(y - h / 2) + 80, int(w),
                          int(h), Qt.AlignCenter, text)
 
     # center pointer
