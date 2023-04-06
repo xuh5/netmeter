@@ -1,16 +1,16 @@
 import sys
 import track_speed
 from PyQt5.QtWidgets import (QWidget, QToolTip,QStackedWidget,QMainWindow,
-    QPushButton, QApplication,QVBoxLayout, QHBoxLayout,QDesktopWidget,QLabel,QMessageBox, QDockWidget)
+    QPushButton, QApplication,QVBoxLayout, QHBoxLayout,QDesktopWidget,QLabel,QMessageBox)
 from PyQt5.QtGui import (QFont,QPixmap,QImage)
-from PyQt5.QtCore import (QRect,QTimer,pyqtSignal,QSize)
+from PyQt5.QtCore import (QRect,QTimer,pyqtSignal)
 from database import Database
 from dashboard import Dashboard
-from dialwidget import DialWidget
 from datetime import datetime
 import os
 
 class main_menu(QWidget):
+    switch_to_dialwidget = pyqtSignal()
     switch_to_test = pyqtSignal()
     switch_to_history = pyqtSignal()
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -46,8 +46,6 @@ class main_menu(QWidget):
             event.ignore()
         elif message_box.clickedButton() == hide_button:
             event.ignore()
-            self.hide()
-            self.dial.show()
             
     def show_history(self):
         return;
@@ -65,22 +63,26 @@ class main_menu(QWidget):
         btn1 = QPushButton('History', self)
         btn2 = QPushButton('speed test', self)
         self.btn3 = QPushButton('record', self)
+        btn4 = QPushButton('pop out', self)
         btn1.setStyleSheet("background-color: rgba(222,184,135,180) ")
         btn2.setStyleSheet("background-color: rgba(222,184,135) ")
         self.btn3.setStyleSheet("background-color: rgba(222,184,135,180) ")
-        tmp_height= (300-scaled_pixmap.height())//3
+        btn4.setStyleSheet("background-color: rgba(222,184,135,180) ")
+        tmp_height= (300-scaled_pixmap.height())//4
         btn1.setGeometry(0, scaled_pixmap.height(), scaled_pixmap.width(),tmp_height)
         btn2.setGeometry(0, scaled_pixmap.height()+tmp_height, scaled_pixmap.width(),tmp_height)
         self.btn3.setGeometry(0, scaled_pixmap.height()+tmp_height*2, scaled_pixmap.width(),tmp_height)
+        btn4.setGeometry(0, scaled_pixmap.height()+tmp_height*3, scaled_pixmap.width(),tmp_height)
         
         #### button functionality
         ### switch UI
         btn2.clicked.connect(self.switch_to_test.emit)
         btn1.clicked.connect(self.switch_to_history.emit)
+        btn4.clicked.connect(self.switch_to_dialwidget.emit)
 
         ####display speed area
         displayspeed = QWidget(self)
-        displayspeed.setGeometry(QRect(scaled_pixmap.width(),scaled_pixmap.height(),300,tmp_height*3))
+        displayspeed.setGeometry(QRect(scaled_pixmap.width(),scaled_pixmap.height(),300,tmp_height*4))
         displayspeed.setStyleSheet("QWidget{background-color:rgb(255,255,235);border:none}")
         
         ######upload,download icon
@@ -122,22 +124,7 @@ class main_menu(QWidget):
 
         ###### circular dashboard
 
-        # dial widget
-        self.dial = QDockWidget(self)
-        self.dial.setGeometry(QRect(0, 0, 200, 200))
-        self.dial.setMinimumSize(QSize(200, 200))
-        self.dial.setMaximumSize(QSize(200, 200))
-        self.dial.setFloating(True)
-        dialwidget = DialWidget()
-        self.dial.setWidget(dialwidget)
-        self.dial.hide()
-        self.dial.visibilityChanged.connect(self.dialClose)
-
         self.show()
-
-    def dialClose(self):
-        if (self.dial.isHidden()):
-            self.show()
 
     def center(self):
         qr = self.frameGeometry()
