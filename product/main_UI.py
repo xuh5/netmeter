@@ -1,11 +1,12 @@
 import sys
 import track_speed
 from PyQt5.QtWidgets import (QWidget, QToolTip,QStackedWidget,QMainWindow,
-    QPushButton, QApplication,QVBoxLayout, QHBoxLayout,QDesktopWidget,QLabel,QMessageBox)
+    QPushButton, QApplication,QVBoxLayout, QHBoxLayout,QDesktopWidget,QLabel,QMessageBox, QDockWidget)
 from PyQt5.QtGui import (QFont,QPixmap,QImage)
-from PyQt5.QtCore import (QRect,QTimer,pyqtSignal)
+from PyQt5.QtCore import (QRect,QTimer,pyqtSignal,QSize)
 from database import Database
 from dashboard import Dashboard
+from dialwidget import DialWidget
 from datetime import datetime
 import os
 
@@ -13,6 +14,7 @@ class main_menu(QWidget):
     switch_to_test = pyqtSignal()
     switch_to_history = pyqtSignal()
     current_dir = os.path.dirname(os.path.abspath(__file__))
+
     def __init__(self):
         super().__init__()
         #### initialize 
@@ -27,6 +29,7 @@ class main_menu(QWidget):
         self.check = True
         self.initUI()
         self.database_= Database()
+
         ###### close/hide
     def closeEvent(self, event):
         message_box = QMessageBox()
@@ -43,9 +46,12 @@ class main_menu(QWidget):
             event.ignore()
         elif message_box.clickedButton() == hide_button:
             event.ignore()
+            self.hide()
+            self.dial.show()
             
     def show_history(self):
         return;
+
     def initUI(self):        
         #### logo
         pixmap = QPixmap(self.current_dir+"/logo.png")
@@ -71,6 +77,7 @@ class main_menu(QWidget):
         ### switch UI
         btn2.clicked.connect(self.switch_to_test.emit)
         btn1.clicked.connect(self.switch_to_history.emit)
+
         ####display speed area
         displayspeed = QWidget(self)
         displayspeed.setGeometry(QRect(scaled_pixmap.width(),scaled_pixmap.height(),300,tmp_height*3))
@@ -107,19 +114,37 @@ class main_menu(QWidget):
         bin_=(0,0.3,0.6,0.9,1.2,1.5,1.8,10,18)
         self.dashboard = Dashboard(bin_,self)
         self.dashboard.setGeometry(self.width()/5*1.7,self.height()/2.3,150,150)
+
         #### record function
-        
         self.btn3.clicked.connect(self.startrecord)
         self.timer_record = QTimer(self)
         self.timer_record.timeout.connect(self.recording)
-        ###### circular dashboard
-        self.show()
-    def center(self):
 
+        ###### circular dashboard
+
+        # dial widget
+        self.dial = QDockWidget(self)
+        self.dial.setGeometry(QRect(0, 0, 200, 200))
+        self.dial.setMinimumSize(QSize(200, 200))
+        self.dial.setMaximumSize(QSize(200, 200))
+        self.dial.setFloating(True)
+        dialwidget = DialWidget()
+        self.dial.setWidget(dialwidget)
+        self.dial.hide()
+        self.dial.visibilityChanged.connect(self.dialClose)
+
+        self.show()
+
+    def dialClose(self):
+        if (self.dial.isHidden()):
+            self.show()
+
+    def center(self):
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
     def getspeed(self):
         x=track_speed.track_speed(self.previous[2],self.previous[3],1)
         self.previous =x
@@ -144,6 +169,7 @@ class main_menu(QWidget):
                     convert2=1000
         self.count+=1
         return convert1,convert2,unit1,unit2
+    
     def startrecord(self):
         if self.check:
             self.btn3.setText("stop")
@@ -161,6 +187,7 @@ class main_menu(QWidget):
 
     def recording(self):
         self.record.append([self.previous[0]/1000000,self.previous[1]/1000000,datetime.now()])
+
     def updatespeed(self):
         convert1,convert2,unit1,unit2 = self.getspeed()
         self.up1.setText(str( round(self.previous[0]/convert1,1))+unit1)
