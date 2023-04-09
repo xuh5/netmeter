@@ -30,25 +30,6 @@ class main_menu(QWidget):
         self.initUI()
         self.database_= Database()
 
-        ###### close/hide
-    def closeEvent(self, event):
-        message_box = QMessageBox()
-        message_box.setWindowTitle("Exit Confirmation")
-        message_box.setText("Are you sure you want to exit the application?")
-        message_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        hide_button = message_box.addButton("Hide", QMessageBox.ActionRole)
-        message_box.setDefaultButton(QMessageBox.No)
-        reply = message_box.exec_()
-
-        if reply == QMessageBox.Yes:
-            event.accept()
-        elif reply == QMessageBox.No:
-            event.ignore()
-        elif message_box.clickedButton() == hide_button:
-            event.ignore()
-            
-    def show_history(self):
-        return;
 
     def initUI(self):        
         #### logo

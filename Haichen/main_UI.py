@@ -10,9 +10,11 @@ from datetime import datetime
 import os
 
 class main_menu(QWidget):
+    switch_to_dialwidget = pyqtSignal()
     switch_to_test = pyqtSignal()
     switch_to_history = pyqtSignal()
     current_dir = os.path.dirname(os.path.abspath(__file__))
+
     def __init__(self):
         super().__init__()
         #### initialize 
@@ -27,25 +29,8 @@ class main_menu(QWidget):
         self.check = True
         self.initUI()
         self.database_= Database()
-        ###### close/hide
-    def closeEvent(self, event):
-        message_box = QMessageBox()
-        message_box.setWindowTitle("Exit Confirmation")
-        message_box.setText("Are you sure you want to exit the application?")
-        message_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        hide_button = message_box.addButton("Hide", QMessageBox.ActionRole)
-        message_box.setDefaultButton(QMessageBox.No)
-        reply = message_box.exec_()
 
-        if reply == QMessageBox.Yes:
-            event.accept()
-        elif reply == QMessageBox.No:
-            event.ignore()
-        elif message_box.clickedButton() == hide_button:
-            event.ignore()
-            
-    def show_history(self):
-        return;
+
     def initUI(self):        
         #### logo
         pixmap = QPixmap(self.current_dir+"/logo.png")
@@ -59,21 +44,26 @@ class main_menu(QWidget):
         btn1 = QPushButton('History', self)
         btn2 = QPushButton('speed test', self)
         self.btn3 = QPushButton('record', self)
+        btn4 = QPushButton('pop out', self)
         btn1.setStyleSheet("background-color: rgba(222,184,135,180) ")
         btn2.setStyleSheet("background-color: rgba(222,184,135) ")
         self.btn3.setStyleSheet("background-color: rgba(222,184,135,180) ")
-        tmp_height= (300-scaled_pixmap.height())//3
+        btn4.setStyleSheet("background-color: rgba(222,184,135,180) ")
+        tmp_height= (300-scaled_pixmap.height())//4
         btn1.setGeometry(0, scaled_pixmap.height(), scaled_pixmap.width(),tmp_height)
         btn2.setGeometry(0, scaled_pixmap.height()+tmp_height, scaled_pixmap.width(),tmp_height)
         self.btn3.setGeometry(0, scaled_pixmap.height()+tmp_height*2, scaled_pixmap.width(),tmp_height)
+        btn4.setGeometry(0, scaled_pixmap.height()+tmp_height*3, scaled_pixmap.width(),tmp_height)
         
         #### button functionality
         ### switch UI
         btn2.clicked.connect(self.switch_to_test.emit)
         btn1.clicked.connect(self.switch_to_history.emit)
+        btn4.clicked.connect(self.switch_to_dialwidget.emit)
+
         ####display speed area
         displayspeed = QWidget(self)
-        displayspeed.setGeometry(QRect(scaled_pixmap.width(),scaled_pixmap.height(),300,tmp_height*3))
+        displayspeed.setGeometry(QRect(scaled_pixmap.width(),scaled_pixmap.height(),300,tmp_height*4))
         displayspeed.setStyleSheet("QWidget{background-color:rgb(255,255,235);border:none}")
         
         ######upload,download icon
@@ -107,19 +97,22 @@ class main_menu(QWidget):
         bin_=(0,0.3,0.6,0.9,1.2,1.5,1.8,10,18)
         self.dashboard = Dashboard(bin_,self)
         self.dashboard.setGeometry(self.width()/5*1.7,self.height()/2.3,150,150)
+
         #### record function
-        
         self.btn3.clicked.connect(self.startrecord)
         self.timer_record = QTimer(self)
         self.timer_record.timeout.connect(self.recording)
-        ###### circular dashboard
-        self.show()
-    def center(self):
 
+        ###### circular dashboard
+
+        self.show()
+
+    def center(self):
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
     def getspeed(self):
         x=track_speed.track_speed(self.previous[2],self.previous[3],1)
         self.previous =x
@@ -144,6 +137,7 @@ class main_menu(QWidget):
                     convert2=1000
         self.count+=1
         return convert1,convert2,unit1,unit2
+    
     def startrecord(self):
         if self.check:
             self.btn3.setText("stop")
@@ -161,6 +155,7 @@ class main_menu(QWidget):
 
     def recording(self):
         self.record.append([self.previous[0]/1000000,self.previous[1]/1000000,datetime.now()])
+
     def updatespeed(self):
         convert1,convert2,unit1,unit2 = self.getspeed()
         self.up1.setText(str( round(self.previous[0]/convert1,1))+unit1)

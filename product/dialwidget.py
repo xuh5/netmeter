@@ -132,7 +132,6 @@ class DialWidget(QWidget):
     # update speed
     def updatespeed(self):
         x = track_speed.track_speed(self.previous[2], self.previous[3], 1)
-        print(x)
         self.previous = x
         download = x[1]
         if (download >= 1000000):
