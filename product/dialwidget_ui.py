@@ -1,7 +1,6 @@
 from dialwidget import DialWidget
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton,QApplication,QToolTip
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, QPoint, pyqtSignal
 
 class DialWidgetUI(QWidget):
 
@@ -32,3 +31,13 @@ class DialWidgetUI(QWidget):
         layout.addWidget(backbtn)
 
         self.setLayout(layout)
+
+    def mousePressEvent(self, event):
+        self.oldPosition = event.globalPos()
+        return
+    
+    def mouseMoveEvent(self, event):
+        delta = QPoint(event.globalPos() - self.oldPosition)
+        self.move(self.x() + delta.x(), self.y() + delta.y())
+        self.oldPosition = event.globalPos()
+        return
