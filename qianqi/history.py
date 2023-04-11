@@ -5,6 +5,8 @@ from PyQt5.QtCore import pyqtSlot,QRect,QSize,pyqtSignal
 from PyQt5.QtWidgets import QTableWidget,QVBoxLayout,QHeaderView,QTableWidgetItem,QHeaderView,QSizePolicy,QAbstractScrollArea
 from database import Database
 import sqlite3
+from fpdf import FPDF
+#import os
 class History_UI(QWidget):
     switch_to_the_main = pyqtSignal()
     def __init__(self):
@@ -31,6 +33,9 @@ class History_UI(QWidget):
         button1 = QPushButton('As TXT', self)
         button1.clicked.connect(self.output)
         button1.setGeometry(0,0,110,40)
+        button2 = QPushButton('As PDF', self)
+        button2.clicked.connect(self.aspdf)
+        button2.setGeometry(110,0,110, 40)
         self.createTable()
         self.layout = QVBoxLayout()
         self.layout.insertSpacing(0,30)
@@ -49,6 +54,21 @@ class History_UI(QWidget):
             f.write('{:<40}{:<40}{:<40}\n'.format("Time","Download", "Upload"))
             for i in range(len(rows)):
                 f.write('{:<40}{:<40}{:<40}\n'.format(rows[i][3],rows[i][1], rows[i][2]))
+    def aspdf(self):
+        rows = self.data.select_all_record()
+        with open("output.txt", 'w') as f:
+            f.write('{:<40}{:<40}{:<40}\n'.format("Time","Download", "Upload"))
+            for i in range(len(rows)):
+                f.write('{:<40}{:<40}{:<40}\n'.format(rows[i][3],rows[i][1], rows[i][2]))
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size = 15)
+        f = open("output.txt", "r")
+        for x in f:
+            pdf.cell(200, 10, txt = x, ln = 1, align = 'C')
+        pdf.output("output.pdf")
+        #path =os.getcwd()
+        #os.remove(path + "/output.txt")
     def createTable(self):
         self.tableWidget = QTableWidget()
         rows = self.data.select_all_record()
