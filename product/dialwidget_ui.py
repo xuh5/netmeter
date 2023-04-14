@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt, QPoint, pyqtSignal
 
 class DialWidgetUI(QWidget):
 
-    switch_to_main_menu = pyqtSignal()
+    switch_to_main_UI = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -23,7 +23,7 @@ class DialWidgetUI(QWidget):
 
         backbtn = QPushButton("back", self)
         backbtn.setStyleSheet("background-color: rgba(222,184,135,255) ")
-        backbtn.clicked.connect(self.switch_to_main_menu.emit)
+        backbtn.clicked.connect(self.switch_to_main_UI.emit)
 
         dialwidget = DialWidget()
 

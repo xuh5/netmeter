@@ -8,19 +8,25 @@ from database import Database
 from dashboard import Dashboard
 from datetime import datetime
 import os
-
-class main_menu(QWidget):
+"""
+Main_UI class
+Its purpose is to create the first / main Ui of the application.
+It tracks the current download/upload speed.
+"""
+class main_UI(QWidget):
+    # send signals when button is clicked
     switch_to_dialwidget = pyqtSignal()
     switch_to_test = pyqtSignal()
     switch_to_history = pyqtSignal()
+    # address of the current directory
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
     def __init__(self):
         super().__init__()
-        #### initialize 
+        # initialize 
         self.previous =(0,0,0,0)
         self.count=0
-        ##### UI setting
+        # UI setting
         self.setStyleSheet("background-color:rgb(217,217,217)") #was 135,206, 235
         self.setFixedSize(400, 300)
         self.center()
@@ -32,14 +38,14 @@ class main_menu(QWidget):
 
 
     def initUI(self):        
-        #### logo
+        #### set the logo
         pixmap = QPixmap(self.current_dir+"/logo.png")
         scaled_pixmap = pixmap.scaled(pixmap.width() // 4, pixmap.height() // 4)
         label = QLabel(self)
         label.setPixmap(scaled_pixmap)
         label.resize(scaled_pixmap.width(),scaled_pixmap.height())
         
-        ########## button
+        #creating buttons button
         
         #Set the title of buttons
         QToolTip.setFont(QFont('SansSerif', 10))
@@ -114,18 +120,18 @@ class main_menu(QWidget):
         btn2.setGeometry(scaled_pixmap.width()//2 - buttonWidth//2, (self.height()-scaled_pixmap.height())//2 - buttonHeight//2 + scaled_pixmap.height(), buttonWidth, buttonHeight)
         
         
-        #### button functionality
-        ### switch UI
+        
+        #butoon functionality,switch UI and send signals
         btn2.clicked.connect(self.switch_to_test.emit)
         btn1.clicked.connect(self.switch_to_history.emit)
         btn4.clicked.connect(self.switch_to_dialwidget.emit)
 
-        ####display speed area
+        ####set up the display speed area
         displayspeed = QWidget(self)
         displayspeed.setGeometry(QRect(scaled_pixmap.width(),scaled_pixmap.height(),300,tmp_height*4))
         displayspeed.setStyleSheet("QWidget{background-color:rgb(217,217,217);border:none}")
         
-        ######upload,download icon
+        #set up upload,download icon
         up = QPixmap(self.current_dir+"/arrow1.png")
         up = up.scaled(20,20)
         label1 = QLabel(self)
@@ -139,7 +145,7 @@ class main_menu(QWidget):
         label2.setStyleSheet("background-color: rgba(255, 255, 255, 0)")
         label2.move(300, 230)
         
-        ########show upload/download number
+        #show upload/download number
         self.up1= QLabel(self)
         self.down1 = QLabel(self)
         self.up1.setText("0B      ")
@@ -152,26 +158,33 @@ class main_menu(QWidget):
         timer.timeout.connect(self.updatespeed)
         timer.start(1000) 
         
-        #####dashboard
+        #set up dashboard
         bin_=(0,0.3,0.6,0.9,1.2,1.5,1.8,10,18)
         self.dashboard = Dashboard(bin_,self)
         self.dashboard.setGeometry(self.width()/5*1.7,self.height()/2.3,150,150)
 
-        #### record function
+        # record function
         self.btn3.clicked.connect(self.startrecord)
         self.timer_record = QTimer(self)
         self.timer_record.timeout.connect(self.recording)
-
-        ###### circular dashboard
-
+        
+        #display
         self.show()
-
+    """
+    make the UI at the center of the laptop
+    :param self: 
+    :return:
+    """
     def center(self):
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-
+    """
+    gets the current download/upload speed and transform it into different unit
+    :param self: 
+    :return: download/upload speed with their unit
+    """
     def getspeed(self):
         x=track_speed.track_speed(self.previous[2],self.previous[3],1)
         self.previous =x
@@ -196,12 +209,18 @@ class main_menu(QWidget):
                     convert2=1000
         self.count+=1
         return convert1,convert2,unit1,unit2
-    
+    """
+    functionality for record button: start to record the speed and add into database
+    :param self: 
+    :return:
+    """
     def startrecord(self):
+        # if the button is off
         if self.check:
             self.btn3.setText("stop")
-            self.timer_record.start(1000)
+            self.timer_record.start(1000) # set timer for recording every 1 second
             self.check= not self.check
+        # if it's already recording 
         else:
             self.btn3.setText("record")
             self.timer_record.stop()
@@ -209,13 +228,23 @@ class main_menu(QWidget):
             for i in self.record:
                 print(i[1],i[0])
                 with self.database_.conn:
-                    self.database_.add_record(i[1],i[0],i[2])
+                    self.database_.addRecord(i[1],i[0],i[2]) # add data to database
             self.record.clear()
-
+    """
+    add the record into a private list every 1 second
+    :param self: 
+    :return:
+    """
     def recording(self):
         self.record.append([self.previous[0]/1000000,self.previous[1]/1000000,datetime.now()])
-
+        
+    """
+    update the speed in text and dashboard every 1 second
+    :param self: 
+    :return:
+    """
     def updatespeed(self):
+        #update the text
         convert1,convert2,unit1,unit2 = self.getspeed()
         self.up1.setText(str( round(self.previous[0]/convert1,1))+unit1)
         self.down1.setText(str(round(self.previous[1]/convert2,1))+unit2)

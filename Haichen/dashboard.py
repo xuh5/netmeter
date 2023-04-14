@@ -7,81 +7,108 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLCDNumber, QFrame
 
 
 class Dashboard(QWidget):
+    """
+        Initialze the dashboard
+        :param self: 
+        :param bin_ : a list of number for scale
+        :parent
+        :return: 
+        """
     def __init__(self,bin_, parent=None):
         super(Dashboard, self).__init__(parent)
 
-        self.setWindowTitle("QPainter测试")
+        self.setWindowTitle("QPainter test")
         # self.setMaximumSize(700, 700)
 
-        # 颜色设置
+        # color setting
         self.bin_= bin_
-        self.pieColorStart = QColor(63, 191, 127)  # 绿色
-        self.pieColorMid = QColor(255, 155, 0)  # 黄色色
-        self.pieColorEnd = QColor(222, 0, 0)  # 红色
-        self.pointerColor = QColor(72, 203, 203)  # 青色
+        self.pieColorStart = QColor(63, 191, 127)  # green
+        self.pieColorMid = QColor(255, 155, 0)  # yellow
+        self.pieColorEnd = QColor(222, 0, 0)  # red
+        self.pointerColor = QColor(72, 203, 203)  # cyan-blue
         self.startAngle = 60
         self.endAngle = 60
         self.minValue = 0
         self.maxValue = 16
         self.currentValue = 0
         self.scaleMajor = 8
-        # 设置字符
+        # set font
         self.font = QFont("宋体", 8)
         self.font.setBold(True)
 
-        # 其他设置
-
+        # other setting
+        """
+        Set the title of the UI
+        :param self: 
+        :param title str
+        :return: 
+        """
     def setTitle(self, title):
         self._title = title
-
+        
+        """
+        Set the current value
+        :param self: 
+        :param value float
+        :return: 
+        """
     def setValue(self, value):
         self.currentValue = value
-
+        """
+        The paintevent manage all the painting
+        :param self
+        :param event: event trigger
+        :return: 
+        """
     def paintEvent(self, event):
-        # 坐标轴变换 默认640*480
+        # change the x, y axies
         width = self.width()
         height = self.height()
 
-        painter = QPainter(self)  # 初始化painter
-        painter.translate(width / 2, height / 2)  # 坐标轴变换，调用translate()将坐标原点平移至窗口中心
+        painter = QPainter(self)  # initialize painter
+        painter.translate(width / 2, height / 2)  # use translate() to make the dashboard to the center of the UI
 
-        # 坐标刻度自适应
+        # pick the min for the side
         side = min(width, height)
         painter.scale(side / 200.0, side / 200.0)
-        # 本项目中将坐标缩小为side/200倍，即画出length=10的直线，其实际长度应为10*(side/200)。
+        # make a line length = side/200
 
-        # 启用反锯齿，使画出的曲线更平滑
+        # use anti-aliasing to make it smoother
         painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
         painter.begin(self)
 
-        # 开始画图
+        # start painting.
         self.drawColorPie(painter)
         self.drawPointerIndicator(painter)
         self.drawLine(painter)
         self.drawText(painter)
         # self.drawTitle(painter)
 
-
-    def drawColorPie(self, painter):  # 绘制三色环
-        painter.save()  # save()保存当前坐标系
-        # print("drawColorPie")
-        # 设置扇形部分区域
+        """
+        draw the three color sector
+        :param self
+        :param painter:manager
+        :return: 
+        """
+    def drawColorPie(self, painter): 
+        painter.save()  # save() the current position
+        # set the area of the sector
         radius = 99  # 半径
         painter.setPen(Qt.NoPen)
-        rect = QRectF(-radius, -radius, radius * 2, radius * 2)  # 扇形所在圆区域
+        rect = QRectF(-radius, -radius, radius * 2, radius * 2)  # the position of the sector
 
-        # 计算三色圆环范围角度。green：blue：red = 1：2：1
+        # calculate the angle of the sector。green：blue：red = 1：2：1
         angleAll = 360.0 - self.startAngle - self.endAngle  # self.startAngle = 45, self.endAngle = 45
         angleStart = angleAll * 0.25
         angleMid = angleAll * 0.5
         angleEnd = angleAll * 0.25
 
-        # 圆的中心部分填充为透明色，形成环的样式
-        rg = QRadialGradient(0, 0, radius, 0, 0)  # 起始圆心坐标，半径，焦点坐标
-        ratio = 0.8  # 透明：实色 = 0.8 ：1
+        # fill the cetner of the circle with transparent color to make a sector 
+        rg = QRadialGradient(0, 0, radius, 0, 0)  
+        ratio = 0.8  # transparent
 
-        # 绘制绿色环
-        rg.setColorAt(0, Qt.transparent)  # 透明色
+        # drawing the green loop
+        rg.setColorAt(0, Qt.transparent) 
         rg.setColorAt(ratio, Qt.transparent)
         rg.setColorAt(ratio + 0.01, self.pieColorStart)
         rg.setColorAt(1, self.pieColorStart)
@@ -89,7 +116,7 @@ class Dashboard(QWidget):
         painter.setBrush(rg)
         painter.drawPie(rect, (270 - self.startAngle - angleStart) * 16, angleStart * 16)
 
-        # 绘制蓝色环
+        # drawing the blue loop
         rg.setColorAt(0, Qt.transparent)
         rg.setColorAt(ratio, Qt.transparent)
         rg.setColorAt(ratio + 0.01, self.pieColorMid)
@@ -98,7 +125,7 @@ class Dashboard(QWidget):
         painter.setBrush(rg)
         painter.drawPie(rect, (270 - self.startAngle - angleStart - angleMid) * 16, angleMid * 16)
 
-        # 绘制红色环
+        # drawing the red loop
         rg.setColorAt(0, Qt.transparent)
         rg.setColorAt(ratio, Qt.transparent)
         rg.setColorAt(ratio + 0.01, self.pieColorEnd)
@@ -107,23 +134,27 @@ class Dashboard(QWidget):
         painter.setBrush(rg)
         painter.drawPie(rect, (270 - self.startAngle - angleStart - angleMid - angleEnd) * 16, angleEnd * 16)
 
-        painter.restore()  # restore()恢复坐标系
-
+        painter.restore()  # restore() the x,y axies
+        
+        """
+        Drawing the pointer Indicator
+        :param self
+        :param painter:manager
+        :return: 
+        """
     def drawPointerIndicator(self, painter):
         painter.save()
-        # 绘制指针
-        # print("drawPointerIndicator")
-        radius = 58  # 指针长度
+
+        radius = 58  # length of the pointer
         painter.setPen(Qt.NoPen)
         painter.setBrush(self.pointerColor)
 
-        # (-5, 0), (0, -8), (5, 0)和（0, radius) 四个点绘出指针形状
-        # 绘制多边形做指针
+        # make a polygon shape for the pointer
         pts = QPolygon()
         pts.setPoints(-5, 0, 0, -8, 5, 0, 0, radius)
         # print("radius:" + str(radius))
 
-        # 旋转指针，使得指针起始指向为0刻度处
+        # rotate the pointer to set it at 0
         painter.rotate(self.startAngle)
         degRotate = 0
         angleStep = (360.0 - self.startAngle - self.endAngle) / self.scaleMajor
@@ -137,50 +168,59 @@ class Dashboard(QWidget):
         painter.rotate(degRotate)
         painter.drawConvexPolygon(pts)
         painter.restore()
-
+    """
+        Drawing the Text to display the speed
+        :param self
+        :param painter:manager
+        :return: 
+        """
     def drawText(self, painter):
         painter.save()
-        # 绘制刻度值
-        # print("drawText")
-        # 位置调整
+        #drawing the scale
+
         startRad = 4
         deltaRad = 0.6
         radius = 63
         offset = 5.5
   
-        for i in range(self.scaleMajor + 1):  # self.scaleMajor = 8, 8个主刻度
-            # 正余弦计算
+        for i in range(self.scaleMajor + 1):  # self.scaleMajor = 8
+            # calculate the sin and cos
             sina = math.sin(startRad - i * deltaRad)
             cosa = math.cos(startRad - i * deltaRad)
 
-            # 刻度值计算
+            # calculate the number for each scale
             value = math.ceil((1.0 * i * (
                     (self.maxValue - self.minValue) / self.scaleMajor) + self.minValue))
-            # math.ceil(x)：返回不小于x的最小整数
+            # math.ceil(x)：return the smallest integeter that is not smaller than x
             strValue = str(int(value))
 
-            # 字符的宽度和高度
+            # text height and width
             textWidth = self.fontMetrics().width(strValue)
             textHeight = self.fontMetrics().height()
 
-            # 字符串的起始位置。注意考虑到字符宽度和高度进行微调
+   
             x = radius * cosa - textWidth / 2
             y = -radius * sina + textHeight / 4
 
             painter.setFont(self.font)
-            painter.setPen(QColor(26, 95, 95))  # 还是用自己选的颜色
+            painter.setPen(QColor(26, 95, 95))  # set color
             painter.drawText(x - offset, y, str(self.bin_[i])+ 'm')
-            # 可以不加，直接在 Title 中进行总体设置也行
+           
         painter.restore()
-
+        """
+        Drawing the line on the scale
+        :param self
+        :param painter:manager
+        :return: 
+        """
     def drawLine(self, painter):
         painter.save()
-        # 绘制刻度线
+        # drawing scale
         # print("drawLine")
         radius = 79
-        painter.rotate(self.startAngle)  # self.startAngle = 45,旋转45度
-        steps = self.scaleMajor  # 8个刻度
-        angleStep = (360.0 - self.startAngle - self.endAngle) / steps  # 刻度角
+        painter.rotate(self.startAngle)  # self.startAngle = 45,rotate 45 degree
+        steps = self.scaleMajor  # 8 scale
+        angleStep = (360.0 - self.startAngle - self.endAngle) / steps  # angle for each scale 
         for i in range(steps + 1):
             if i < 3:
                 color = self.pieColorStart
