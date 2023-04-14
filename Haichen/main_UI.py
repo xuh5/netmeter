@@ -150,7 +150,7 @@ class main_menu(QWidget):
             for i in self.record:
                 print(i[1],i[0])
                 with self.database_.conn:
-                    self.database_.add_record(i[1],i[0],i[2])
+                    self.database_.addRecord(i[1],i[0],i[2])
             self.record.clear()
 
     def recording(self):

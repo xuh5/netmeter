@@ -49,13 +49,13 @@ class History_UI(QWidget):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
     def output(self):
-        rows = self.data.select_all_record()
+        rows = self.data.selectAllRecords()
         with open("output.txt", 'w') as f:
             f.write('{:<40}{:<40}{:<40}\n'.format("Time","Download", "Upload"))
             for i in range(len(rows)):
                 f.write('{:<40}{:<40}{:<40}\n'.format(rows[i][3],rows[i][1], rows[i][2]))
     def aspdf(self):
-        rows = self.data.select_all_record()
+        rows = self.data.selectAllRecords()
         with open("output.txt", 'w') as f:
             f.write('{:<40}{:<40}{:<40}\n'.format("Time","Download", "Upload"))
             for i in range(len(rows)):
@@ -71,7 +71,7 @@ class History_UI(QWidget):
         #os.remove(path + "/output.txt")
     def createTable(self):
         self.tableWidget = QTableWidget()
-        rows = self.data.select_all_record()
+        rows = self.data.selectAllRecords()
         self.tableWidget.setRowCount(len(rows))
         self.tableWidget.setColumnCount(3)
         self.tableWidget.setColumnWidth(0,190)
