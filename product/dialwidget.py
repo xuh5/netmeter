@@ -132,7 +132,6 @@ class DialWidget(QWidget):
     # update speed
     def updatespeed(self):
         x = track_speed.track_speed(self.previous[2], self.previous[3], 1)
-        print(x)
         self.previous = x
         download = x[1]
         if (download >= 1000000):
@@ -444,7 +443,7 @@ class DialWidget(QWidget):
 
         x = text_radius * math.cos(math.radians(angle))
         y = text_radius * math.sin(math.radians(angle))
-        painter.drawText(int(x - w / 2) - 50, int(y - h / 2) + 75, int(w),
+        painter.drawText(int(x - w / 2) - 45, int(y - h / 2) + 80, int(w),
                          int(h), Qt.AlignCenter, text)
 
     # center pointer
@@ -479,8 +478,7 @@ class DialWidget(QWidget):
         painter.translate(self.width() / 2, self.height() / 2)
         painter.setPen(Qt.NoPen)
         colored_scale_polygon = self.create_polygon_pie(
-            ((self.widget_diameter / 2) - (self.pen.width())),
-            (self.widget_diameter / 6),
+            ((self.widget_diameter / 2) - (self.pen.width())), 0,
             self.scale_angle_start_value / 10, 360, False)
 
         radialGradient = QRadialGradient(QPointF(0, 0), self.width())

@@ -54,14 +54,14 @@ class History_UI(QWidget):
         self.move(qr.topLeft())
     #function which connect to the button to download history file as txt
     def output(self):
-        rows = self.data.select_all_record()
+        rows = self.data.selectAllRecords()
         with open("output.txt", 'w') as f:
             f.write('{:<40}{:<40}{:<40}\n'.format("Time","Download", "Upload"))
             for i in range(len(rows)):
                 f.write('{:<40}{:<40}{:<40}\n'.format(rows[i][3],rows[i][1], rows[i][2]))
     #function which connect to the button to download history file as pdf
     def aspdf(self):
-        rows = self.data.select_all_record()
+        rows = self.data.selectAllRecords()
         with open("output.txt", 'w') as f:
             f.write('{:<40}{:<40}{:<40}\n'.format("Time","Download", "Upload"))
             for i in range(len(rows)):
@@ -78,6 +78,7 @@ class History_UI(QWidget):
         self.tableWidget = QTableWidget()
         #set the initial table 
         rows = self.data.select_all_record()
+        rows = self.data.selectAllRecords()
         self.tableWidget.setRowCount(len(rows))
         self.tableWidget.setColumnCount(3)
         self.tableWidget.setColumnWidth(0,190)

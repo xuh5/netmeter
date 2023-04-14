@@ -10,26 +10,26 @@ class Dashboard(QWidget):
     def __init__(self,bin_, parent=None):
         super(Dashboard, self).__init__(parent)
 
-        self.setWindowTitle("QPainter测试")
+        self.setWindowTitle("QPainter test")
         # self.setMaximumSize(700, 700)
 
-        # 颜色设置
+        # color setting
         self.bin_= bin_
-        self.pieColorStart = QColor(63, 191, 127)  # 绿色
-        self.pieColorMid = QColor(255, 155, 0)  # 黄色色
-        self.pieColorEnd = QColor(222, 0, 0)  # 红色
-        self.pointerColor = QColor(72, 203, 203)  # 青色
+        self.pieColorStart = QColor(63, 191, 127)  # green
+        self.pieColorMid = QColor(255, 155, 0)  # yellow
+        self.pieColorEnd = QColor(222, 0, 0)  # red
+        self.pointerColor = QColor(72, 203, 203)  # cyan-blue
         self.startAngle = 60
         self.endAngle = 60
         self.minValue = 0
         self.maxValue = 16
         self.currentValue = 0
         self.scaleMajor = 8
-        # 设置字符
+        # set font
         self.font = QFont("宋体", 8)
         self.font.setBold(True)
 
-        # 其他设置
+        # other setting
 
     def setTitle(self, title):
         self._title = title
@@ -42,10 +42,10 @@ class Dashboard(QWidget):
         width = self.width()
         height = self.height()
 
-        painter = QPainter(self)  # 初始化painter
-        painter.translate(width / 2, height / 2)  # 坐标轴变换，调用translate()将坐标原点平移至窗口中心
+        painter = QPainter(self)  # initialize painter
+        painter.translate(width / 2, height / 2)  # use translate() to make the dashboard to the center of the UI
 
-        # 坐标刻度自适应
+        # pick the min for the side
         side = min(width, height)
         painter.scale(side / 200.0, side / 200.0)
         # 本项目中将坐标缩小为side/200倍，即画出length=10的直线，其实际长度应为10*(side/200)。
