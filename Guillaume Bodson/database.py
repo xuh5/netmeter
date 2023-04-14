@@ -3,7 +3,10 @@ import datetime
 from sqlite3 import Error
 from datetime import datetime
 
-
+"""
+Database class
+Its purpose is to connect to the database file and through it add records to the database or fetch records from the database.
+"""
 class Database:
 
     def __init__(self):
@@ -20,70 +23,71 @@ class Database:
 
         if self.conn is not None:
             # create histroy table
-            self.create_table()
+            self.createTable()
         else:
             print("Error! cannot create the database connection.")
 
 
-    def create_table(self):
-        """ create a table from the create_table_sql statement if it doesn't already exist
+    def createTable(self):
+        """ 
+        create a table from the create_table_sql statement if it doesn't already exist
         :param self: 
         :return:
         """
         #sql statement
-        sql_create_history_table = """ CREATE TABLE IF NOT EXISTS history (  
+        sqlCreateHistoryTable = """ CREATE TABLE IF NOT EXISTS history (  
                                         id integer PRIMARY KEY,
-                                        download_speed text,
-                                        upload_speed text,
-                                        record_datetime text
+                                        downloadSpeed text,
+                                        uploadSpeed text,
+                                        recordDatetime text
                                     ); """
         try:
             c = self.conn.cursor()
-            c.execute(sql_create_history_table)
+            c.execute(sqlCreateHistoryTable)
         except Error as e:
             print(e)
 
-    def add_record(self, download, upload, cur_datetime):
+    def addRecord(self, downloadSpeed, uploadSpeed, curDatetime):
         """
         Create a new record into the history table
         :param self: 
-        :param download: download speed
-        :param upload: upload speed
-        :param cur_datetime: date and time the information was saved
+        :param downloadSpeed: download speed
+        :param uploadSpeed: upload speed
+        :param curDatetime: date and time the information was saved
         :return: 
         """
 
         #gets the correct units for download and upload speed to make the data more readable
-        d_unit = "MB"
-        u_unit = "MB"
-        if(download < 1):
-            download *= 1000
-            d_unit = "KB"
-            if(download < 1):
-                download *= 1000
-                d_unit = "B"
+        downUnit = "MB"
+        upUnit = "MB"
+        if(downloadSpeed < 1):
+            downloadSpeed *= 1000
+            downUnit = "KB"
+            if(downloadSpeed < 1):
+                downloadSpeed *= 1000
+                downUnit = "B"
 
-        if(upload < 1):
-            upload *= 1000
-            u_unit = "KB"
-            if(download < 1):
-                download *= 1000
-                u_unit = "B"
+        if(uploadSpeed < 1):
+            uploadSpeed *= 1000
+            upUnit = "KB"
+            if(uploadSpeed < 1):
+                uploadSpeed *= 1000
+                upUnit = "B"
 
-        download = str(download) + d_unit
-        upload = str(upload) + u_unit
-        record = (download, upload, cur_datetime)
+        downloadSpeed = str(downloadSpeed) + downUnit
+        uploadSpeed = str(uploadSpeed) + upUnit
+        record = (downloadSpeed, uploadSpeed, curDatetime)
 
-        sql = ''' INSERT INTO history(download_speed,upload_speed,record_datetime)
+        sql = ''' INSERT INTO history(downloadSpeed,uploadSpeed,recordDatetime)
                   VALUES(?,?,?) '''
 
         cur = self.conn.cursor()
         cur.execute(sql, record)
         self.conn.commit()
 
-    def delete_all_records(self):
+    def deleteAllRecords(self):
         """
-        Delete all rows in the history table
+        Deletes all rows in the history table
         :param self: 
         :return:
         """
@@ -92,7 +96,7 @@ class Database:
         cur.execute(sql)
         self.conn.commit()
 
-    def select_all_record(self):
+    def selectAllRecords(self):
         """
         Query all rows in the history table
         :param self:
@@ -103,4 +107,3 @@ class Database:
 
         rows = cur.fetchall()
         return rows
-
