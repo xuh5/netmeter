@@ -40,20 +40,20 @@ class main_menu(QWidget):
         label.resize(scaled_pixmap.width(),scaled_pixmap.height())
         
         ########## button
+        
+        #Set the title of buttons
         QToolTip.setFont(QFont('SansSerif', 10))
         btn1 = QPushButton('History', self)
         btn2 = QPushButton('speed test', self)
         self.btn3 = QPushButton('record', self)
         btn4 = QPushButton('pop out', self)
-        #btn1.setStyleSheet("background-color: rgba(222,184,135,180) ")
-        #btn2.setStyleSheet("background-color: rgba(222,184,135) ")
-        #self.btn3.setStyleSheet("background-color: rgba(222,184,135,180) ")
-        #btn4.setStyleSheet("background-color: rgba(222,184,135,180) ")
-        
+
+        #Set the font of buttons
         btn1.setFont(QFont('Times',10))
         self.btn3.setFont(QFont('Times',10))
         btn4.setFont(QFont('Times',10))
         
+        #Set the style of button
         btn1.setStyleSheet("""
             QPushButton{
                 border: none;
@@ -63,11 +63,15 @@ class main_menu(QWidget):
                 background-color: rgb(255, 0, 191);
             }
         """)
+        
+        #Button 2 is different because it has different position
         btn2.setStyleSheet("""
             border-radius: 50px;
             border: 2px solid black;
             background-color: rgb(255,255,235);
         """)
+        
+        #Button 3 style
         self.btn3.setStyleSheet("""
             QPushButton{
                 border: none;
@@ -77,6 +81,8 @@ class main_menu(QWidget):
                 background-color: rgb(255, 0, 191);
             }
         """)
+        
+        #Button 4 style
         btn4.setStyleSheet("""
             QPushButton{
                 border: none;
@@ -87,24 +93,25 @@ class main_menu(QWidget):
             }
         """)
         
+        #Some parameters to make sure all buttons except button 2 has the same size
         temp_width = (400-scaled_pixmap.width())//3
         
         tmp_height= (300-scaled_pixmap.height())//4
-        #btn1.setGeometry(0, scaled_pixmap.height(), scaled_pixmap.width(),tmp_height)
-        #self.btn3.setGeometry(0, scaled_pixmap.height()+tmp_height*2, scaled_pixmap.width(),tmp_height)
-        #btn4.setGeometry(0, scaled_pixmap.height()+tmp_height*3, scaled_pixmap.width(),tmp_height)
         
+        #Set the geometry of button 1, 3, 4
         btn1.setGeometry(scaled_pixmap.width(),0,temp_width,scaled_pixmap.height())
+                
+        self.btn3.setGeometry(scaled_pixmap.width() + temp_width,0,temp_width,scaled_pixmap.height())
         
-        button_width = 100
+        btn4.setGeometry(scaled_pixmap.width() + temp_width * 2,0,temp_width,scaled_pixmap.height())
         
-        button_height = 100
+        #Special parameters only for button 2
+        buttonWidth = 100
         
-        btn2.setGeometry(scaled_pixmap.width()//2 - button_width//2, (self.height()-scaled_pixmap.height())//2 - button_height//2 + scaled_pixmap.height(), button_width,button_height)
+        buttonHeight = 100
         
-        self.btn3.setGeometry(scaled_pixmap.width()+temp_width,0,temp_width,scaled_pixmap.height())
-        
-        btn4.setGeometry(scaled_pixmap.width()+temp_width*2,0,temp_width,scaled_pixmap.height())
+        #Special geometry to make sure the position of button 2 is at the center horizontally and vertically
+        btn2.setGeometry(scaled_pixmap.width()//2 - buttonWidth//2, (self.height()-scaled_pixmap.height())//2 - buttonHeight//2 + scaled_pixmap.height(), buttonWidth, buttonHeight)
         
         
         #### button functionality
