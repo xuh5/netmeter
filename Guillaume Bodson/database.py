@@ -8,13 +8,13 @@ Database class
 Its purpose is to connect to the database file and through it add records to the database or fetch records from the database.
 """
 class Database:
-
+    """
+    Creates a connection to the database and creates the history table if it doesn't already exist
+    :param self:
+    :return:
+    """
     def __init__(self):
-        """
-        Creates a connection to the database and creates the history table if it doesn't already exist
-        :param self:
-        :return:
-        """
+
         self.conn = None
         try:
             self.conn = sqlite3.connect(r"database.db") #creates the connection to the sqlite3 database file
@@ -27,13 +27,13 @@ class Database:
         else:
             print("Error! cannot create the database connection.")
 
-
+    """ 
+    create a table from the create_table_sql statement if it doesn't already exist
+    :param self: 
+    :return:
+    """
     def createTable(self):
-        """ 
-        create a table from the create_table_sql statement if it doesn't already exist
-        :param self: 
-        :return:
-        """
+
         #sql statement
         sqlCreateHistoryTable = """ CREATE TABLE IF NOT EXISTS history (  
                                         id integer PRIMARY KEY,
@@ -46,16 +46,18 @@ class Database:
             c.execute(sqlCreateHistoryTable)
         except Error as e:
             print(e)
-
+            
+            
+    """
+    Create a new record into the history table
+    :param self: 
+    :param downloadSpeed: download speed
+    :param uploadSpeed: upload speed
+    :param curDatetime: date and time the information was saved
+    :return: 
+    """
     def addRecord(self, downloadSpeed, uploadSpeed, curDatetime):
-        """
-        Create a new record into the history table
-        :param self: 
-        :param downloadSpeed: download speed
-        :param uploadSpeed: upload speed
-        :param curDatetime: date and time the information was saved
-        :return: 
-        """
+        
 
         #gets the correct units for download and upload speed to make the data more readable
         downUnit = "MB"
@@ -84,24 +86,27 @@ class Database:
         cur = self.conn.cursor()
         cur.execute(sql, record)
         self.conn.commit()
-
+        
+    """
+    Deletes all rows in the history table
+    :param self: 
+    :return:
+    """
     def deleteAllRecords(self):
-        """
-        Deletes all rows in the history table
-        :param self: 
-        :return:
-        """
+
         sql = 'DELETE FROM history'
         cur = self.conn.cursor()
         cur.execute(sql)
         self.conn.commit()
-
+        
+        
+    """
+    Query all rows in the history table
+    :param self:
+    :return: array of rows of the table
+    """
     def selectAllRecords(self):
-        """
-        Query all rows in the history table
-        :param self:
-        :return: array of rows of the table
-        """
+
         cur = self.conn.cursor()
         cur.execute("SELECT * FROM history")
 
