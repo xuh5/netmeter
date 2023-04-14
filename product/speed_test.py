@@ -2,14 +2,12 @@ import speedtest
 
 """
 This function will run a Internet speed test and return the download speed, upload speed, and ping
-Note: the speed test might take up to 30 seconds, just like the speed test online.
 
-Return parameters:
-download: the download speed, float
-downloadUnit: the unit of download speed, string
-upload: the upload speed, float
-uploadUnit: the unit of upload speed, string
-ping: current ping, int
+:return: download: the download speed, float
+:return: downloadUnit: the unit of download speed, string
+:return: upload: the upload speed, float
+:return: uploadUnit: the unit of upload speed, string
+:return: ping: current ping, int
 """
 
 def speed_test():
