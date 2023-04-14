@@ -4,13 +4,15 @@ import psutil as p
 """
 This is the track speed function, it will calculate the average download and upload speed in a given time slot
 the return value of this function will be the next time input
-Note: This function is a one-time version of the function above
 
-lastBytesRecv: The value of bytes received in the last call
-lastBytesSent: The value of bytes sent in the last call
-durationTime: The time between two calls
+:param: lastBytesRecv: The value of bytes received in the last call, unsigned int
+:param: lastBytesSent: The value of bytes sent in the last call, unsigned int
+:param: durationTime: The time between two calls, float
 
-This function will return the download speed and upload speed in KB
+:return: avgUpload: the average upload speed in the duration, float
+:return: avgDownload: the average download speed in the duration, float
+:return: nextTimeInputRecv: the input value of received bytes in the next call, unsigned int
+:return: nextTimeInputSent: the input value of sent bytes in the next call, unsigned int
 
 """
 def track_speed(lastBytesRecv, lastBytesSent, durationTime):
@@ -24,5 +26,8 @@ def track_speed(lastBytesRecv, lastBytesSent, durationTime):
     #Keep the data for next call
     nextTimeInputRecv = currentNetIo.bytes_recv
     nextTimeInputSent = currentNetIo.bytes_sent
+    
+    avgUpload = deltaUpload/durationTime
+    avgDownload = deltaRecv/durationTime
 
-    return deltaUpload/durationTime, deltaRecv/durationTime, nextTimeInputRecv, nextTimeInputSent
+    return avgUpload, avgDownload, nextTimeInputRecv, nextTimeInputSent
