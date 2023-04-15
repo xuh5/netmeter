@@ -7,20 +7,25 @@ try:
 
     from PyQt5.QtGui import QPolygon, QPolygonF, QColor, QPen, QFont, QPainter, QFontMetrics, QConicalGradient, QRadialGradient, QFontDatabase
 
-    from PyQt5.QtCore import Qt, QPoint, QPointF, QRect, QSize, QObject, pyqtSignal, QTimer
+    from PyQt5.QtCore import Qt, QPoint, QPointF, QObject, QTimer
 
 except:
     print("Error while importing PyQt5")
     exit()
 
-# dialwidget
-
+"""
+DialWidget class
+a class that draws the dial widget
+"""
 class DialWidget(QWidget):
     
-    valueChanged = pyqtSignal(int)
-
-    def __init__(self, parent=None):
-        super(DialWidget, self).__init__(parent)
+    """
+    Initialize defualt values to create dial.
+    :param self:
+    :return: none
+    """
+    def __init__(self):
+        super().__init__()
 
         # needle color: red
         self.NeedleColor = Qt.red
@@ -129,7 +134,11 @@ class DialWidget(QWidget):
         timer.timeout.connect(self.updatespeed)
         timer.start(1000)
 
-    # update speed
+    """
+    runs track speed to keep dial updated with correct value
+    :param self:
+    :return: none
+    """
     def updatespeed(self):
         x = track_speed.track_speed(self.previous[2], self.previous[3], 1)
         self.previous = x
@@ -145,8 +154,11 @@ class DialWidget(QWidget):
         
         self.updateValue(download)
 
-    # rescale
-
+    """
+    updates dial parameters when resized
+    :param self:
+    :return: none
+    """
     def rescale_method(self):
         
         # set h and w
@@ -166,14 +178,24 @@ class DialWidget(QWidget):
         self.scale_fontsize = int(self.initial_scale_fontsize * self.widget_diameter / 400)
         self.value_fontsize = int(self.initial_value_fontsize * self.widget_diameter / 400)
 
+    """
+    change needle size
+    :param self:
+    :param design: needle dimensions
+    :return: none
+    """
     def change_value_needle_style(self, design):
-        # prepared for multiple needle instrument
         self.value_needle = []
         for i in design:
             self.value_needle.append(i)
         self.update()
 
-    #update value
+    """
+    changes the current value displayed by dial
+    :param self:
+    :param value: new value
+    :return: none
+    """
     def updateValue(self, value):
         if value <= self.minValue:
             self.value = self.minValue
@@ -181,25 +203,23 @@ class DialWidget(QWidget):
             self.value = self.maxValue
         else:
             self.value = value
-        self.valueChanged.emit(int(value))
 
         self.update()
 
-    def updateAngleOffset(self, offset):
-        self.angle_offset = offset
-        self.update()
-
-    def center_horizontal(self, value):
-        self.center_horizontal_value = value
-
-    def center_vertical(self, value):
-        self.center_vertical_value = value
-
-    # set label
+    """
+    changes the current units displayed by dial
+    :param self:
+    :return: none
+    """
     def setUnits(self, units):
         self.units = units
 
-    # set min value
+    """
+    changes the current minimum value displayed by dial
+    :param self:
+    :param min: new min value
+    :return: none
+    """
     def setMinValue(self, min):
         if self.value < min:
             self.value = min
@@ -210,7 +230,12 @@ class DialWidget(QWidget):
 
         self.update()
 
-    # set max value
+    """
+    changes the current maximum value displayed by dial
+    :param self:
+    :param max: new max value
+    :return: none
+    """
     def setMaxValue(self, max):
         if self.value > max:
             self.value = max
@@ -221,7 +246,12 @@ class DialWidget(QWidget):
 
         self.update()
 
-    # set scale polygon colors
+    """
+    sets the color for the measurement bar of the dial
+    :param self:
+    :param color_array: array of colors
+    :return: none
+    """
     def set_scale_polygon_colors(self, color_array):
         if 'list' in str(type(color_array)):
             self.scale_polygon_colors = color_array
@@ -232,11 +262,16 @@ class DialWidget(QWidget):
 
         self.update()
 
-    # get max value
-    def get_value_max(self):
-        return self.maxValue
-
-    # create pie
+    """
+    helper function that sections circle into slices
+    :param self:
+    :param outer_radius: outer radius of the circle
+    :param inner_radius: inner radius of the circle
+    :param start: start degree
+    :param length: length of the pie
+    :param bar_graph:
+    :return: polygon pie
+    """
     def create_polygon_pie(self, outer_radius, inner_raduis, start, lenght, bar_graph=True):
         polygon_pie = QPolygonF()
 
@@ -270,6 +305,12 @@ class DialWidget(QWidget):
         polygon_pie.append(QPointF(x, y))
         return polygon_pie
 
+    """
+    draws the measurement bar of the dial
+    :param self:
+    :param outline_pen_width: width of the border
+    :return: none
+    """
     def draw_filled_polygon(self, outline_pen_with=0):
         if not self.scale_polygon_colors == None:
             painter_filled_polygon = QPainter(self)
@@ -291,8 +332,6 @@ class DialWidget(QWidget):
                  * self.gauge_color_inner_radius_factor),
                 self.scale_angle_start_value, self.scale_angle_size)
 
-            gauge_rect = QRect(QPoint(0, 0), QSize(
-                int(self.widget_diameter / 2 - 1), int(self.widget_diameter - 1)))
             grad = QConicalGradient(QPointF(0, 0), - self.scale_angle_size - self.scale_angle_start_value +
                                     self.angle_offset - 1)
 
@@ -302,9 +341,12 @@ class DialWidget(QWidget):
             painter_filled_polygon.setBrush(grad)
 
             painter_filled_polygon.drawPolygon(colored_scale_polygon)
-            # return painter_filled_polygon
 
-    # big scale markers
+    """
+    draws the big scaled markers on dial
+    :param self:
+    :return: none
+    """
     def draw_big_scaled_marker(self):
         my_painter = QPainter(self)
         my_painter.setRenderHint(QPainter.Antialiasing)
@@ -325,6 +367,11 @@ class DialWidget(QWidget):
                                 scale_line_outer_start, 0)
             my_painter.rotate(steps_size)
 
+    """
+    draws the values on each scalar marker
+    :param self:
+    :return: none
+    """
     def create_scale_marker_values_text(self):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -360,7 +407,11 @@ class DialWidget(QWidget):
             painter.drawText(int(x - w / 2), int(y - h / 2), int(w),
                              int(h), Qt.AlignCenter, text)
 
-    # fine scale markers
+    """
+    draws the fine scaled markers on dial
+    :param self:
+    :return: none
+    """
     def create_fine_scaled_marker(self):
         #  Description_dict = 0
         my_painter = QPainter(self)
@@ -381,7 +432,11 @@ class DialWidget(QWidget):
                                 scale_line_outer_start, 0)
             my_painter.rotate(steps_size)
 
-    # value text
+    """
+    draws the value display by dial as a number
+    :param self:
+    :return: none
+    """
     def create_values_text(self):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.HighQualityAntialiasing)
@@ -413,7 +468,11 @@ class DialWidget(QWidget):
         painter.drawText(int(x - w / 2), int(y - h / 2), int(w),
                          int(h), Qt.AlignCenter, text)
 
-    # units text
+    """
+    draws the units dial is currently using
+    :param self:
+    :return: none
+    """
     def create_units_text(self):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.HighQualityAntialiasing)
@@ -446,7 +505,12 @@ class DialWidget(QWidget):
         painter.drawText(int(x - w / 2) - 45, int(y - h / 2) + 80, int(w),
                          int(h), Qt.AlignCenter, text)
 
-    # center pointer
+    """
+    draws object needle rotates around
+    :param self:
+    :param diameter: diameter of the needle's center
+    :return: none
+    """
     def draw_big_needle_center_point(self, diameter=30):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -468,9 +532,13 @@ class DialWidget(QWidget):
         painter.setBrush(grad)
 
         painter.drawPolygon(colored_scale_polygon)
-        # return painter_filled_polygon
 
-    # create outer cover
+    """
+    draws background of dial
+    :param self:
+    :param diameter: diameter of dial
+    :return: none
+    """
     def draw_outer_circle(self, diameter=30):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -490,7 +558,11 @@ class DialWidget(QWidget):
 
         painter.drawPolygon(colored_scale_polygon)
 
-    # needle pointer
+    """
+    draws needle
+    :param self:
+    :return: none
+    """
     def draw_needle(self):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -504,11 +576,21 @@ class DialWidget(QWidget):
 
     #events
 
-    # on window resize
+    """
+    calls rescale method when window is resized
+    :param self:
+    :param event: resize event
+    :return: none
+    """
     def resizeEvent(self, event):
         self.rescale_method()
     
-    # on paint event
+    """
+    paints the dial
+    :param self:
+    :param event: paint event
+    :return: none
+    """
     def paintEvent(self, event):
         # Main Drawing Event:
         # Will be executed on every change
