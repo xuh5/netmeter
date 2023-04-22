@@ -10,18 +10,18 @@ class Dashboard(QWidget):
     """
         Initialze the dashboard
         :param self: 
-        :param bin_ : a list of number for scale
+        :param binX : a list of number for scale
         :parent
         :return: 
         """
-    def __init__(self,bin_, parent=None):
+    def __init__(self,binX, parent=None):
         super(Dashboard, self).__init__(parent)
 
         self.setWindowTitle("QPainter test")
         # self.setMaximumSize(700, 700)
 
         # color setting
-        self.bin_= bin_
+        self.binList= binX
         self.pieColorStart = QColor(63, 191, 127)  # green
         self.pieColorMid = QColor(255, 155, 0)  # yellow
         self.pieColorEnd = QColor(222, 0, 0)  # red
@@ -44,7 +44,7 @@ class Dashboard(QWidget):
         :return: 
         """
     def setTitle(self, title):
-        self._title = title
+        self.title_ = title
         
         """
         Set the current value
@@ -158,12 +158,12 @@ class Dashboard(QWidget):
         painter.rotate(self.startAngle)
         degRotate = 0
         angleStep = (360.0 - self.startAngle - self.endAngle) / self.scaleMajor
-        if(self.currentValue <self.bin_[6]):
-            degRotate = (360.0 - self.startAngle - self.endAngle -2*angleStep) / self.bin_[6] \
+        if(self.currentValue <self.binList[6]):
+            degRotate = (360.0 - self.startAngle - self.endAngle -2*angleStep) / self.binList[6] \
                     * (self.currentValue - self.minValue)
-        if(self.currentValue>self.bin_[6] and self.currentValue<self.bin_[8]):
-            degRotate = (2*angleStep / self.bin_[8] * (self.currentValue - self.bin_[6]))+ 6* angleStep
-        if(self.currentValue>=self.bin_[8]):
+        if(self.currentValue>self.binList[6] and self.currentValue<self.binList[8]):
+            degRotate = (2*angleStep / self.binList[8] * (self.currentValue - self.binList[6]))+ 6* angleStep
+        if(self.currentValue>=self.binList[8]):
             degRotate = 8* angleStep
         painter.rotate(degRotate)
         painter.drawConvexPolygon(pts)
@@ -204,7 +204,7 @@ class Dashboard(QWidget):
 
             painter.setFont(self.font)
             painter.setPen(QColor(26, 95, 95))  # set color
-            painter.drawText(x - offset, y, str(self.bin_[i])+ 'm')
+            painter.drawText(x - offset, y, str(self.binList[i])+ 'm')
            
         painter.restore()
         """

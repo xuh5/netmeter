@@ -15,7 +15,7 @@ the return value of this function will be the next time input
 :return: nextTimeInputSent: the input value of sent bytes in the next call, unsigned int
 
 """
-def track_speed(lastBytesRecv, lastBytesSent, durationTime):
+def trackSpeed(lastBytesRecv, lastBytesSent, durationTime):
     
     currentNetIo = p.net_io_counters() #Initialize the io countings
     

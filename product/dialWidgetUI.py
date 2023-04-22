@@ -1,4 +1,4 @@
-from dialwidget import DialWidget
+from dialWidget import DialWidget
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton,QApplication,QToolTip
 from PyQt5.QtCore import Qt, QPoint, pyqtSignal
 
@@ -8,7 +8,7 @@ a class that displays the dial with an UI
 """
 class DialWidgetUI(QWidget):
 
-    switch_to_main_UI = pyqtSignal()
+    switchToMainUI = pyqtSignal()
 
     """
     Initializes the DialWidgetUI
@@ -38,11 +38,11 @@ class DialWidgetUI(QWidget):
 
         backbtn = QPushButton("back", self)
         backbtn.setStyleSheet("background-color: rgba(222,184,135,255) ")
-        backbtn.clicked.connect(self.switch_to_main_UI.emit)
+        backbtn.clicked.connect(self.switchToMainUI.emit)
 
-        dialwidget = DialWidget()
+        dialWidget = DialWidget()
 
-        layout.addWidget(dialwidget)
+        layout.addWidget(dialWidget)
         layout.addWidget(backbtn)
 
         self.setLayout(layout)

@@ -1,20 +1,19 @@
 import sys
-import track_speed
 from PyQt5.QtWidgets import (QWidget, QToolTip,QStackedWidget,QMainWindow,
     QPushButton, QApplication,QVBoxLayout, QHBoxLayout,QDesktopWidget,QLabel,QMessageBox)
 from PyQt5.QtGui import (QFont,QPixmap,QImage)
 from PyQt5.QtCore import (QRect,QTimer,QCoreApplication,pyqtSignal)
 from dashboard import Dashboard
-from speed_test import speed_test
+from speedTest import speedTest
 import os
 """
-Speed_test_UI class
+SpeedTestUI class
 Its purpose is to let the user test their maximum speed
 """
-class Speed_test_UI(QWidget):
+class SpeedTestUI(QWidget):
     # set signals and get the current directory
-    switch_to_track = pyqtSignal()
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    switchToTrack = pyqtSignal()
+    currentDir = os.path.dirname(os.path.abspath(__file__))
     """
     initialize the UI
     :param self:
@@ -27,9 +26,11 @@ class Speed_test_UI(QWidget):
         self.count=0
         ##### UI setting
         self.setStyleSheet("background-color:rgb(135,206,235)")
-        self.setFixedSize(400, 300)
+        self.setFixedSize(420, 300)
         self.center()
         self.setWindowTitle('Netmeter')
+        self.label1 = QLabel("Please wait after you click the 'start' button", self) #initilize the text label
+        self.label1.move(int(self.width()//5), int(self.height()//10)+50)
         self.initUI()
     """
     Make the Ui at the center of the window
@@ -47,10 +48,10 @@ class Speed_test_UI(QWidget):
     :param self:
     :return: 
     """
-    def show_speed(self):
+    def showSpeed(self):
         x = None
         while x is None:
-            x = speed_test()
+            x = speedTest()
             # Process any pending events in the event loop
             QCoreApplication.processEvents()
         
@@ -58,6 +59,7 @@ class Speed_test_UI(QWidget):
         self.down1.setText(str(round(x[2],1))+x[3])
         self.ping.setText("ping:"+str(round(x[4]))+'ms')
         valueinmb= round(x[0]+x[2]) 
+        self.label1.setText("Speed test finished") #change the text label
         self.dashboard.setValue(valueinmb)
         self.dashboard.update()
     """
@@ -67,24 +69,27 @@ class Speed_test_UI(QWidget):
     """
     def initUI(self):  
         # add logo
-        pixmap = QPixmap(self.current_dir+"/logo.png")
-        scaled_pixmap = pixmap.scaled(pixmap.width() // 4, pixmap.height() // 4)
+        pixmap = QPixmap(self.currentDir+"/logo.png")
+        scaledPixmap = pixmap.scaled(pixmap.width() // 4, pixmap.height() // 4)
      
         label = QLabel(self)
-        label.setPixmap(scaled_pixmap)
-        label.resize(scaled_pixmap.width(),scaled_pixmap.height())
-        label.move(self.width()-scaled_pixmap.width(),0)
+        label.setPixmap(scaledPixmap)
+        label.resize(scaledPixmap.width(),scaledPixmap.height())
+        label.move(self.width()-scaledPixmap.width(),0)
         
         #add the heading widget
         heading = QWidget(self)
-        heading.setGeometry(QRect(0,0,self.width(),scaled_pixmap.height()))
+        heading.setGeometry(QRect(0,0,self.width(),scaledPixmap.height()))
         heading.setStyleSheet("QWidget{background-color:rgb(255,255,235);border:none}")
         heading.lower()
         
         #set up buttons
-        btn1 = QPushButton('Main', self)
-        btn1.setStyleSheet("background-color: rgba(222,184,135,180) ")
-        btn1.setGeometry(0, 0, scaled_pixmap.width(),scaled_pixmap.height())
+        btn1 = QPushButton('Back to Main', self)
+        btn1.setStyleSheet("""
+            background-color: rgba(222,184,135,180);
+            border: none;
+        """)
+        btn1.setGeometry(0, 0, scaledPixmap.width(),scaledPixmap.height())
         
         # set up the title
         title= QLabel('Times font',self)
@@ -93,21 +98,21 @@ class Speed_test_UI(QWidget):
         title.setStyleSheet("background-color: rgba(255, 255, 255, 0)")
         
         # make a bin for the scale of the dashboard
-        bin_=(0,20,40,60,80,100,120,320,620)
-        self.dashboard = Dashboard(bin_,self)
+        binList=(0,20,40,60,80,100,120,320,620)
+        self.dashboard = Dashboard(binList,self)
 
-        self.dashboard.setGeometry(self.width()/5*1.7,self.height()/2.3,150,150)
+        self.dashboard.setGeometry(int(self.width()/5*1.7),int(self.height()/2.3),150,150)
         ###### switch ui
-        btn1.clicked.connect(self.switch_to_track.emit)
+        btn1.clicked.connect(self.switchToTrack.emit)
         
          ######upload,download icon
-        up = QPixmap(self.current_dir+"/arrow1.png")
+        up = QPixmap(self.currentDir+"/arrow1.png")
         up = up.scaled(20,20)
         label1 = QLabel(self)
         label1.setPixmap(up)
         label1.setStyleSheet("background-color: rgba(255, 255, 255, 0)")
         label1.move(300, 150)
-        down = QPixmap(self.current_dir+"/arrow2.png")
+        down = QPixmap(self.currentDir+"/arrow2.png")
         down = down.scaled(20,20)
         label2 = QLabel(self)
         label2.setPixmap(down)
@@ -117,8 +122,8 @@ class Speed_test_UI(QWidget):
         ########show upload/download number
         self.up1= QLabel(self)
         self.down1 = QLabel(self)
-        self.up1.setText("0B      ")
-        self.down1.setText("0B      ")
+        self.up1.setText("0B          ")
+        self.down1.setText("0B            ")
         self.up1.move(325, 150)
         self.down1.move(325, 230)
         self.up1.setStyleSheet("background-color: rgba(255, 255, 255, 0)")
@@ -126,7 +131,7 @@ class Speed_test_UI(QWidget):
         
         # show the ping
         self.ping = QLabel(self)
-        self.ping.setText("ping:0ms   ")
+        self.ping.setText("ping:0ms     ")
         self.ping.move(305,180)
         self.ping.setStyleSheet("background-color: rgba(255, 255, 255, 0)")
        
@@ -143,7 +148,7 @@ class Speed_test_UI(QWidget):
                 background-color: green;
             }
         """)
-        button.clicked.connect(self.show_speed)
+        button.clicked.connect(self.showSpeed)
         
         #display
         self.show()

@@ -10,7 +10,7 @@ This function will run a Internet speed test and return the download speed, uplo
 :return: ping: current ping, int
 """
 
-def speed_test():
+def speedTest():
 
     st = speedtest.Speedtest() #Initialize the speed test model
 

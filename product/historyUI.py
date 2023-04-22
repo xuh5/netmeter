@@ -7,16 +7,16 @@ from database import Database
 import sqlite3
 from fpdf import FPDF
 """
-History_UI class
-Its purpose is to display the data in the database which the user recorded in the Main_UI
+HistoryUI class
+Its purpose is to display the data in the database which the user recorded in the MainUI
 """
-class History_UI(QWidget):
+class HistoryUI(QWidget):
     """
     Create the initial page for the windown and set up the window size
     :param self:
     :return: None
     """
-    switch_to_the_main = pyqtSignal()
+    switchToTheMain = pyqtSignal()
     def __init__(self):
         super().__init__()
         self.title = 'History'
@@ -40,7 +40,7 @@ class History_UI(QWidget):
         label.setFont(QFont('Arial', 20))
         #set button for back to menu
         button = QPushButton('Back to Menu', self)
-        button.clicked.connect(self.switch_to_the_main.emit)
+        button.clicked.connect(self.switchToTheMain.emit)
         button.setGeometry(535,0,110,40)
         #set button for download as txt
         button1 = QPushButton('As TXT', self)
