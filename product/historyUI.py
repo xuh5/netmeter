@@ -6,6 +6,8 @@ from PyQt5.QtWidgets import QTableWidget,QVBoxLayout,QHeaderView,QTableWidgetIte
 from database import Database
 import sqlite3
 from fpdf import FPDF
+import os
+
 """
 HistoryUI class
 Its purpose is to display the data in the database which the user recorded in the MainUI
@@ -72,13 +74,20 @@ class HistoryUI(QWidget):
     :param self:
     :return: None
     """
+
     def output(self):
         rows = self.data.selectAllRecords()
-        #loop to put the data into txt version
-        with open("output.txt", 'w') as f:
+        desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+        file_path = os.path.join(desktop_path, "output.txt")
+        with open(file_path, "w") as f:
             f.write('{:<40}{:<40}{:<40}\n'.format("Time","Download", "Upload"))
             for i in range(len(rows)):
                 f.write('{:<40}{:<40}{:<40}\n'.format(rows[i][3],rows[i][1], rows[i][2]))
+        #Notification
+        dlg = QMessageBox(self)
+        dlg.setText("Done! the file is on the desktop")
+        button = dlg.exec()
+
     """
     The function which the download as pdf button use to transfer the database file into a pdf file
     :param self:
@@ -86,19 +95,29 @@ class HistoryUI(QWidget):
     """
     def aspdf(self):
         rows = self.data.selectAllRecords()
-        #first transfer the file into txt version
-        with open("output.txt", 'w') as f:
+        desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+        txt_file_path = os.path.join(desktop_path, "output.txt")
+        pdf_file_path = os.path.join(desktop_path, "output.pdf")
+        # First transfer the data into txt version
+        with open(txt_file_path, 'w') as f:
             f.write('{:<40}{:<40}{:<40}\n'.format("Time","Download", "Upload"))
             for i in range(len(rows)):
                 f.write('{:<40}{:<40}{:<40}\n'.format(rows[i][3],rows[i][1], rows[i][2]))
+        # Create the PDF file from the txt file
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size = 15)
-        f = open("output.txt", "r")
-        #tranfer the file into pdf version
-        for x in f:
-            pdf.cell(200, 10, txt = x, ln = 1, align = 'C')
-        pdf.output("output.pdf")
+        with open(txt_file_path, "r") as f:
+            for x in f:
+                pdf.cell(200, 10, txt = x, ln = 1, align = 'C')
+        pdf.output(pdf_file_path)
+        # Then remove the txt file
+        os.remove(txt_file_path)
+        #Notification
+        dlg = QMessageBox(self)
+        dlg.setText("Done! the file is on the desktop")
+        button = dlg.exec()
+
     """
     The function to set up the table to display data in database
     :param self:
