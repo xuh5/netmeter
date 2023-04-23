@@ -19,7 +19,7 @@ History_UI.py
 these are the UI files
 
 Installation:
-download software_exe_file folder
+download software_exe_file folder \n
 open core.exe
 
 Our coding standard:
