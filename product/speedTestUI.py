@@ -30,6 +30,7 @@ class SpeedTestUI(QWidget):
         self.center()
         self.setWindowTitle('Netmeter')
         self.label1 = QLabel("Please wait after you click the 'start' button", self) #initilize the text label
+        self.label1.setFont(QFont('Arial', 8))
         self.label1.move(int(self.width()//5), int(self.height()//10)+50)
         self.initUI()
     """
